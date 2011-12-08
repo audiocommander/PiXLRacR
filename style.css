@@ -30,13 +30,20 @@ a:hover {
 
 #hints {
 	position: fixed;
-	bottom: 72px;
+	bottom: 74px;
 	right: 20px;
 	text-align: right;
 }
 #hints .silkscreen_small {
 	font: 10px/13px 'SilkscreenExpandedBold', Arial, sans-serif;
 	color: hsl(182, 0%, 51%);
+}
+.credits,
+.credits a,
+.credits a:visited {
+	font-size: 7px;
+	line-height: 9px;
+	color: rgba(128, 128, 128, 0.4);
 }
 
 #logo {
