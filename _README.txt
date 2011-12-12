@@ -5,4 +5,11 @@ original URL: http://audiocommander.de/dev/pixlracr
 
 Version History:
 2011-11-29	v.0.0.1	First Version as a basic Demo for the JS Revealing Module Design Pattern
-2011-12-06	v.0.1.0	Added Sound, improved keycontrols, various improvements
+2011-12-06	v.0.1.0	Added Sound, better keycontrols, various improvements
+2011-12-10	v.0.1.1	Finer direction control, Mouse Control Support
+					experimental TouchControls & mouse support, separated controller object
+					Mobile Safari fixes, HTML5 compatibility
+
+// TODO:
+- fix scrolling for setSpeed
+- add physical tilt control (left, right, touch to move) while preventing orientation change

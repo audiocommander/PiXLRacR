@@ -9,18 +9,20 @@ var pixl = function () {
 	
 	// this is all private stuff
 	
-	var pixl = document.getElementById("pixl");
-	var sound = document.getElementById("sound");
-	var spansize = document.getElementById("size");
-	var spanspeed = document.getElementById("speed");
-	var spanmoving = document.getElementById("moving");
+	var pixl = document.querySelector("#pixl");
+	var sound = document.querySelector("#sound");
+	var spansize = document.querySelector("#size");
+	var spanspeed = document.querySelector("#speed");
+	var spanmoving = document.querySelector("#moving");
 	
 	var x = 250;
 	var y = 250;
 	var size = 4;
-	var speed = 4;
-	var directionY = false;
-	var directionX = false;
+	var speed = 20;
+	var goLeft = false;
+	var goRight = false;
+	var goUp = false;
+	var goDown = false;
 	
 	// init
 	setSize(4);
@@ -37,8 +39,8 @@ var pixl = function () {
 	}
 	
 	function applySize() {
-		pixl.style.width = size;
-		pixl.style.height = size;
+		pixl.style.width = size + "px";
+		pixl.style.height = size + "px";
 		spansize.textContent = size;
 	}
 	function setSize(newSize) {
@@ -74,43 +76,39 @@ var pixl = function () {
 	
 	function move() {
 		// move up or down
-		if(directionY == "up") {
+		if(goUp) {
 			y = y - speed;
-			if(y < 0) { 
+			if(y < (0-size)) { 
 				y = window.innerHeight; 
-			} else if(y > window.innerHeight) {
-				y = 0;
 			}
-			pixl.style.top = y;
-		} else if(directionY == "down") {
+		} else if(goDown) {
 			y = y + speed;
-			if(y < 0) { 
-				y = window.innerHeight-size;
-			} else if(y > window.innerHeight-size) {
+			if(y > window.innerHeight) {
 				y = 0;
 			}
-			pixl.style.top = y;
 		}
 		// move left or right
-		if(directionX == "left") {
+		if(goLeft) {
 			x = x - speed;
-			if(x < 0) {
+			if(x < (0-size)) {
 				x = window.innerWidth;
-			} else if(x > window.innerWidth) {
-				x = 0;
 			}
-			pixl.style.left = x;
-		} else if (directionX == "right") {
+		} else if(goRight) {
 			x = x + speed;
-			if(x < 0) {
-				x = window.innerWidth-size;
-			} else if(x > window.innerWidth-size) {
+			if(x > window.innerWidth) {
 				x = 0;
 			}
-			pixl.style.left = x;
+		}
+		// move the pixl
+		// Note: Mobile Safari is quite picky about the "px"
+		if(goUp || goDown) {
+			pixl.style.top = y + "px";
+		}
+		if(goLeft || goRight) {
+			pixl.style.left = x + "px";
 		}
 		// update show if moving
-		if(directionX || directionY) {
+		if(goLeft || goRight || goUp || goDown) {
 			spanmoving.textContent = 1;
 			sound.volume = 0.75;
 		} else {
@@ -119,21 +117,30 @@ var pixl = function () {
 		}
 	}
 	
-	function moveUp(isKeyDownEvent) {
-		(isKeyDownEvent ? directionY = "up" : directionY = false);
+	function moveUp(eventBegins) {
+		(eventBegins ? goUp = true : goUp = false);
 		//if(directionY) { move(); }
 	}
-	function moveDown(isKeyDownEvent) {
-		(isKeyDownEvent ? directionY = "down" : directionY = false);
+	function moveDown(eventBegins) {
+		(eventBegins ? goDown = true : goDown = false);
 		//if(directionY) { move(); }
 	}
-	function moveLeft(isKeyDownEvent) {
-		(isKeyDownEvent ? directionX = "left" : directionX = false);
+	function moveLeft(eventBegins) {
+		(eventBegins ? goLeft = true : goLeft = false);
 		//if(directionX) { move(); }
 	}
-	function moveRight(isKeyDownEvent) {
-		(isKeyDownEvent ? directionX = "right" : directionX = false);
+	function moveRight(eventBegins) {
+		(eventBegins ? goRight = true : goRight = false);
 		//if(directionX) { move(); }
+	}
+	function isMovingInDirection() {
+		return "moving " + (goUp?"up ":"") + (goDown?"down ":"") + (goLeft?"left ":"") + (goRight?"right ":"");
+	}
+	function stop() {
+		goUp = false;
+		goDown = false;
+		goLeft = false;
+		goRight = false;
 	}
 	
 	// publicly exposed functions
@@ -147,80 +154,12 @@ var pixl = function () {
 		increaseSpeed:increaseSpeed,
 		decreaseSpeed:decreaseSpeed,
 		move:move,
+		isMoving:isMovingInDirection,
 		up:moveUp,
 		down:moveDown,
 		left:moveLeft,
-		right:moveRight
+		right:moveRight,
+		stop:stop
 	}
 
 }
-
-
-
-var p;
-	
-window.onload = function() {
-	// create one pixl
-	p = new pixl();
-	// add keyEvent
-	window.onkeydown = function(e) {
-		//console.log("KeyDown: " + e);
-		switch (e.keyCode) {
-//			case 32: // SPACE
-			case 37: // LEFT
-				p.left(true);
-				break;
-			case 38: // UP
-				p.up(true);
-				break;
-			case 39: // RIGHT
-				p.right(true);
-				break;
-			case 40: // DOWN
-				p.down(true);
-				break;
-				
-			case 187:	// +
-				p.increaseSize();
-				break;
-			case 189:	// -
-				p.decreaseSize();
-				break;
-			case 190:	// .
-				p.increaseSpeed();
-				break;
-			case 188:	// ,
-				p.decreaseSpeed();
-				break;
-		};
-		// suppress default key behaviour
-		e.preventDefault();
-	};
-	window.onkeyup = function(e) {
-		switch (e.keyCode) {
-			case 37: // LEFT
-				p.left(false);
-				break;
-			case 38: // UP
-				p.up(false);
-				break;
-			case 39: // RIGHT
-				p.right(false);
-				break;
-			case 40: // DOWN
-				p.down(false);
-				break;
-		}
-		// suppress default key behaviour
-		e.preventDefault();
-	};
-	
-	// setup animation by creating a timer
-	var timer = setInterval( function() {
-		p.move();
-	}, 100);
-	
-	// set the focus on the window to receive all key events
-	window.focus();
-}
-	
